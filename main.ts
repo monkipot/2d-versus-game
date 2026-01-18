@@ -4,6 +4,10 @@
 class Game {
     canvas: HTMLCanvasElement;
     gl: WebGLRenderingContext;
+    posX: number = 50;
+    posY: number = 50;
+    width: number = 100;
+    height: number = 150;
 
     constructor() {
         const canvas = document.querySelector<HTMLCanvasElement>("#glCanvas");
@@ -18,11 +22,36 @@ class Game {
 
         this.canvas = canvas;
         this.gl = gl;
+
+        this.keyboard();
+    }
+
+
+    keyboard() {
+        window.addEventListener("keydown", (e) => {
+            const step = 1;
+            switch (e.key) {
+                case "ArrowLeft":
+                    this.posX -= step;
+                    break;
+                case "ArrowRight":
+                    this.posX += step;
+                    break;
+                case "ArrowUp":
+                    this.posY -= step;
+                    break;
+                case "ArrowDown":
+                    this.posY += step;
+                    break;
+            }
+            this.render();
+        });
     }
 
     render(): void {
-        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+        this.gl.clearColor(0, 0, 0, 1);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
         const vsSource = `
             attribute vec2 vertex_position;
@@ -59,10 +88,13 @@ class Game {
 
         const positionBuffer = this.gl.createBuffer()!;
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        const x = 50, y = 50, width = 100, height = 150;
+        const x = this.posX;
+        const y = this.posY;
+        const w = this.width;
+        const h = this.height;
         const positions = new Float32Array([
-            x, y, x + width, y, x, y + height,
-            x, y + height, x + width, y, x + width, y + height
+            x, y, x + w, y, x, y + h,
+            x, y + h, x + w, y, x + w, y + h
         ]);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
 
