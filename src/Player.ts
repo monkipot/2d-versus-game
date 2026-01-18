@@ -12,7 +12,7 @@ export class Player {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.step = 1;
+        this.step = 10;
     }
 
     moveLeft(): void {
