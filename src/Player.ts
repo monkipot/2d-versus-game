@@ -27,10 +27,6 @@ export class Player {
         this.y -= this.step;
     }
 
-    moveDown(): void {
-        this.y += this.step;
-    }
-
     getRectangle(): Rectangle {
         return {
             x: this.x,
