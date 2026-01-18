@@ -6,6 +6,9 @@ export class Player {
     width: number;
     height: number;
     step: number;
+    //TODO: should be a statePlayer
+    velocityY: number;
+    onGround: boolean;
 
     constructor(x: number, y: number, width: number = 100, height: number = 150) {
         this.x = x;
@@ -13,6 +16,8 @@ export class Player {
         this.width = width;
         this.height = height;
         this.step = 10;
+        this.velocityY = 0;
+        this.onGround = true;
     }
 
     moveLeft(): void {
@@ -21,10 +26,6 @@ export class Player {
 
     moveRight(): void {
         this.x += this.step;
-    }
-
-    moveUp(): void {
-        this.y -= this.step;
     }
 
     getRectangle(): Rectangle {
