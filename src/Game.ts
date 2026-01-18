@@ -3,6 +3,7 @@ import { InputHandler } from "./InputHandler.js";
 import { Player } from "./Player.js";
 
 export class Game {
+    private canvas: HTMLCanvasElement;
     private webGL: WebGLRender;
     private input: InputHandler;
     private player: Player;
@@ -18,6 +19,7 @@ export class Game {
             throw new Error("WebGL is not supported");
         }
 
+        this.canvas = canvas;
         this.webGL = new WebGLRender(gl);
         this.input = new InputHandler();
         this.player = new Player(50, 50);
@@ -29,16 +31,24 @@ export class Game {
         this.input.setOnKeyDown((key) => {
             switch (key) {
                 case "ArrowLeft":
-                    this.player.moveLeft();
+                    if (this.player.x - this.player.step >= 0) {
+                        this.player.moveLeft();
+                    }
                     break;
                 case "ArrowRight":
-                    this.player.moveRight();
+                    if (this.player.x + this.player.width + this.player.step <= this.canvas.width) {
+                        this.player.moveRight();
+                    }
                     break;
                 case "ArrowUp":
-                    this.player.moveUp();
+                    if (this.player.y - this.player.step >= 0) {
+                        this.player.moveUp();
+                    }
                     break;
                 case "ArrowDown":
-                    this.player.moveDown();
+                    if (this.player.y + this.player.height + this.player.step <= this.canvas.height) {
+                        this.player.moveDown();
+                    }
                     break;
             }
             this.render();
