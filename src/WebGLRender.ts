@@ -26,8 +26,7 @@ export class WebGLRender {
             uniform vec2 canva_size;
             void main() {
                 vec2 normalized_position = vertex_position / canva_size;
-                vec2 scaled_position = normalized_position;
-                vec2 clip_space_position = scaled_position;
+                vec2 clip_space_position = normalized_position * 2.0 - 1.0;
                 gl_Position = vec4(clip_space_position * vec2(1.0, -1.0), 0.0, 1.0);
             }
         `;
