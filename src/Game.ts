@@ -45,11 +45,6 @@ export class Game {
                         this.player.moveUp();
                     }
                     break;
-                case "ArrowDown":
-                    if (this.player.y + this.player.height + this.player.step <= this.canvas.height) {
-                        this.player.moveDown();
-                    }
-                    break;
             }
             this.render();
         });
