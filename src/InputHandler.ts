@@ -2,6 +2,7 @@ export type KeyCallback = (key: string) => void;
 
 export class InputHandler {
     private onKeyDown: KeyCallback | null = null;
+    private onKeyUp: KeyCallback | null = null;
 
     constructor() {
         window.addEventListener("keydown", (e) => {
@@ -9,9 +10,18 @@ export class InputHandler {
                 this.onKeyDown(e.key);
             }
         });
+        window.addEventListener("keyup", (e) => {
+            if (this.onKeyUp) {
+                this.onKeyUp(e.key);
+            }
+        });
     }
 
     setOnKeyDown(callback: KeyCallback): void {
         this.onKeyDown = callback;
+    }
+
+    setOnKeyUp(callback: KeyCallback): void {
+        this.onKeyUp = callback;
     }
 }

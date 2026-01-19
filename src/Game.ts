@@ -57,6 +57,7 @@ export class Game {
                   health: ${player.health}
                   strength: ${player.strength}
                   isAttacking: ${player.isAttacking}
+                  isParrying: ${player.isParrying}
             `)
             .join();
     }
@@ -112,8 +113,19 @@ export class Game {
                     if(this.player.isAttacking) return;
                     this.player.attack(this.player2);
                     break;
+                case "x":
+                    this.player.parry();
+                    break;
             }
             this.render();
+        });
+
+        this.input.setOnKeyUp((key) => {
+            switch (key) {
+                case "x":
+                    this.player.stopParry();
+                    break;
+            }
         });
     }
 

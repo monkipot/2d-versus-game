@@ -13,6 +13,7 @@ export class Player {
     strength: number = 10;
     attackRange: number = 20;
     isAttacking: boolean = false;
+    isParrying: boolean = false;
 
     constructor(x: number, y: number, width: number = 60, height: number = 150) {
         this.x = x;
@@ -53,5 +54,13 @@ export class Player {
         setTimeout(() => {
             this.isAttacking = false;
         }, 300);
+    }
+
+    parry(): void {
+        this.isParrying = true;
+    }
+
+    stopParry(): void {
+        this.isParrying = false;
     }
 }
