@@ -79,19 +79,27 @@ export class Game {
         });
     }
 
+    private willCollide(nextX: number): boolean {
+        return nextX < this.player2.x + this.player2.width && nextX + this.player.width > this.player2.x;
+    }
+
     private keyboard(): void {
         this.input.setOnKeyDown((key) => {
             switch (key) {
-                case "ArrowLeft":
-                    if (this.player.x - this.player.step >= 0) {
+                case "ArrowLeft": {
+                    const nextX = this.player.x - this.player.step;
+                    if (nextX >= 0 && !this.willCollide(nextX)) {
                         this.player.moveLeft();
                     }
                     break;
-                case "ArrowRight":
-                    if (this.player.x + this.player.width + this.player.step <= this.canvas.width) {
+                }
+                case "ArrowRight": {
+                    const nextX = this.player.x + this.player.step;
+                    if (nextX + this.player.width <= this.canvas.width && !this.willCollide(nextX)) {
                         this.player.moveRight();
                     }
                     break;
+                }
                 case "ArrowUp":
                     if (this.player.onGround && this.player.y - this.player.step >= 0) {
                         this.player.velocityY = this.jumpForce;
