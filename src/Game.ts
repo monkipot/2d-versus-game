@@ -54,6 +54,7 @@ export class Game {
                   height: ${player.height}
                   velocityY: ${player.velocityY.toFixed(2)}
                   onGround: ${player.onGround}
+                  health: ${player.health}
             `)
             .join();
     }

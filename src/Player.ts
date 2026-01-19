@@ -9,6 +9,7 @@ export class Player {
     //TODO: should be a statePlayer
     velocityY: number;
     onGround: boolean;
+    health: number = 100;
 
     constructor(x: number, y: number, width: number = 100, height: number = 150) {
         this.x = x;
