@@ -10,6 +10,8 @@ export class Player {
     velocityY: number;
     onGround: boolean;
     health: number = 100;
+    strength: number = 10;
+    attackRange: number = 20;
 
     constructor(x: number, y: number, width: number = 100, height: number = 150) {
         this.x = x;
@@ -36,5 +38,15 @@ export class Player {
             width: this.width,
             height: this.height
         };
+    }
+
+    isInRange(opponent: Player): boolean {
+        return Math.abs((this.x + this.width) - opponent.x) <= this.attackRange;
+    }
+
+    attack(opponent: Player): void {
+        if (this.isInRange(opponent)) {
+            opponent.health -= this.strength;
+        }
     }
 }

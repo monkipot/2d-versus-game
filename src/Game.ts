@@ -55,6 +55,7 @@ export class Game {
                   velocityY: ${player.velocityY.toFixed(2)}
                   onGround: ${player.onGround}
                   health: ${player.health}
+                  strength: ${player.strength}
             `)
             .join();
     }
@@ -105,6 +106,9 @@ export class Game {
                         this.player.velocityY = this.jumpForce;
                         this.player.onGround = false;
                     }
+                    break;
+                case "a":
+                    this.player.attack(this.player2);
                     break;
             }
             this.render();
