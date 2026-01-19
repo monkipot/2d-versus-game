@@ -45,14 +45,17 @@ export class Game {
     }
 
     private debugUpdate(): void {
-        this.debug.textContent = `
-        Player:
-          x: ${this.player.x.toFixed(1)}
-          y: ${this.player.y.toFixed(1)}
-          width: ${this.player.width}
-          height: ${this.player.height}
-          velocityY: ${this.player.velocityY.toFixed(2)}
-          onGround: ${this.player.onGround}`;
+        this.debug.textContent = [this.player, this.player2]
+            .map((player, i) => `
+                Player ${i + 1}:
+                  x: ${player.x.toFixed(1)}
+                  y: ${player.y.toFixed(1)}
+                  width: ${player.width}
+                  height: ${player.height}
+                  velocityY: ${player.velocityY.toFixed(2)}
+                  onGround: ${player.onGround}
+            `)
+            .join();
     }
 
     private loop(): void {
