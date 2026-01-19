@@ -61,10 +61,14 @@ export class WebGLRender {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
 
-    drawPlayer(rect: Rectangle): void {
+    drawPlayer(rect: Rectangle, isAttacking: boolean): void {
         this.drawHead(rect);
         this.drawTorso(rect);
-        this.drawLegs(rect);
+        if (isAttacking) {
+            this.drawKickingLegs(rect);
+        } else {
+            this.drawLegs(rect);
+        }
     }
 
     drawHead({ x, y, width, height }: Rectangle): void {
@@ -99,6 +103,22 @@ export class WebGLRender {
             y: y + height * 0.25 + height * 0.4,
             width: width * 0.2,
             height: height * 0.35
+        });
+    }
+
+    drawKickingLegs({ x, y, width, height }: Rectangle): void {
+        this.drawRectangle({
+            x: (x + width * 0.5) - width * 0.22,
+            y: y + height * 0.25 + height * 0.4,
+            width: width * 0.2,
+            height: height * 0.35
+        });
+
+        this.drawRectangle({
+            x: x + width * 0.5,
+            y: y + height * 0.5,
+            width: height * 0.35,
+            height: width * 0.2
         });
     }
 

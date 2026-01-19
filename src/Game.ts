@@ -56,6 +56,7 @@ export class Game {
                   onGround: ${player.onGround}
                   health: ${player.health}
                   strength: ${player.strength}
+                  isAttacking: ${player.isAttacking}
             `)
             .join();
     }
@@ -108,6 +109,7 @@ export class Game {
                     }
                     break;
                 case "a":
+                    if(this.player.isAttacking) return;
                     this.player.attack(this.player2);
                     break;
             }
@@ -117,7 +119,7 @@ export class Game {
 
     render(): void {
         this.webGL.clear();
-        this.webGL.drawPlayer(this.player.getRectangle());
-        this.webGL.drawPlayer(this.player2.getRectangle());
+        this.webGL.drawPlayer(this.player.getRectangle(), this.player.isAttacking);
+        this.webGL.drawPlayer(this.player2.getRectangle(), this.player2.isAttacking);
     }
 }

@@ -12,6 +12,7 @@ export class Player {
     health: number = 100;
     strength: number = 10;
     attackRange: number = 20;
+    isAttacking: boolean = false;
 
     constructor(x: number, y: number, width: number = 60, height: number = 150) {
         this.x = x;
@@ -45,8 +46,12 @@ export class Player {
     }
 
     attack(opponent: Player): void {
+        this.isAttacking = true;
         if (this.isInRange(opponent)) {
             opponent.health -= this.strength;
         }
+        setTimeout(() => {
+            this.isAttacking = false;
+        }, 300);
     }
 }
