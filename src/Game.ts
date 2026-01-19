@@ -117,7 +117,7 @@ export class Game {
 
     render(): void {
         this.webGL.clear();
-        this.webGL.drawRectangle(this.player.getRectangle());
-        this.webGL.drawRectangle(this.player2.getRectangle());
+        this.webGL.drawPlayer(this.player.getRectangle());
+        this.webGL.drawPlayer(this.player2.getRectangle());
     }
 }

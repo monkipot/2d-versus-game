@@ -61,6 +61,47 @@ export class WebGLRender {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
 
+    drawPlayer(rect: Rectangle): void {
+        this.drawHead(rect);
+        this.drawTorso(rect);
+        this.drawLegs(rect);
+    }
+
+    drawHead({ x, y, width, height }: Rectangle): void {
+        //TODO: draw properly without shitty values
+        this.drawRectangle({
+            x: (x + width * 0.5) - width * 0.25,
+            y: y,
+            width: width * 0.5,
+            height: height * 0.2
+        });
+    }
+
+    drawTorso({ x, y, width, height }: Rectangle): void {
+        this.drawRectangle({
+            x: (x + width * 0.5) - width * 0.5,
+            y: y + height * 0.25,
+            width: width,
+            height: height * 0.4
+        });
+    }
+
+    drawLegs({ x, y, width, height }: Rectangle): void {
+        this.drawRectangle({
+            x: (x + width * 0.5) - width * 0.22,
+            y: y + height * 0.25 + height * 0.4,
+            width: width * 0.2,
+            height: height * 0.35
+        });
+
+        this.drawRectangle({
+            x: x + width * 0.5 + width * 0.02,
+            y: y + height * 0.25 + height * 0.4,
+            width: width * 0.2,
+            height: height * 0.35
+        });
+    }
+
     drawRectangle(rect: Rectangle): void {
         this.gl.useProgram(this.program);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
