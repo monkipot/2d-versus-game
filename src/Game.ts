@@ -7,6 +7,7 @@ export class Game {
     private webGL: WebGLRender;
     private input: InputHandler;
     private player: Player;
+    private player2: Player;
     private gravity: number = 0.5;
     private jumpForce: number = -12;
     private debug: HTMLPreElement;
@@ -26,6 +27,7 @@ export class Game {
         this.webGL = new WebGLRender(gl);
         this.input = new InputHandler();
         this.player = new Player(50, 50);
+        this.player2 = new Player(canvas.width - 150, 50);
         this.debug = this.debugInfo();
 
         this.keyboard();
@@ -61,14 +63,16 @@ export class Game {
     }
 
     private setGravity(): void {
-        this.player.velocityY += this.gravity;
-        this.player.y += this.player.velocityY;
+        [this.player, this.player2].map(player => {
+            player.velocityY += this.gravity;
+            player.y += player.velocityY;
 
-        if (this.player.y + this.player.height >= this.canvas.height) {
-            this.player.y = this.canvas.height - this.player.height;
-            this.player.velocityY = 0;
-            this.player.onGround = true;
-        }
+            if (player.y + player.height >= this.canvas.height) {
+                player.y = this.canvas.height - player.height;
+                player.velocityY = 0;
+                player.onGround = true;
+            }
+        });
     }
 
     private keyboard(): void {
@@ -98,5 +102,6 @@ export class Game {
     render(): void {
         this.webGL.clear();
         this.webGL.drawRectangle(this.player.getRectangle());
+        this.webGL.drawRectangle(this.player2.getRectangle());
     }
 }
