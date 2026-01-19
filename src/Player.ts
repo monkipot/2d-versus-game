@@ -49,7 +49,8 @@ export class Player {
     attack(opponent: Player): void {
         this.isAttacking = true;
         if (this.isInRange(opponent)) {
-            opponent.health -= this.strength;
+            const damages = opponent.isParrying ? this.strength * 0.2 : this.strength
+            opponent.health -= damages;
         }
         setTimeout(() => {
             this.isAttacking = false;
