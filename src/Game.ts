@@ -1,11 +1,13 @@
 import { WebGLRender } from "./WebGLRender.js";
 import { InputHandler } from "./InputHandler.js";
 import { Player } from "./Player.js";
+import { AudioManager } from "./AudioManager.js";
 
 export class Game {
     private canvas: HTMLCanvasElement;
     private webGL: WebGLRender;
     private input: InputHandler;
+    private audio: AudioManager;
     private player: Player;
     private player2: Player;
     private gravity: number = 0.5;
@@ -26,6 +28,7 @@ export class Game {
         this.canvas = canvas;
         this.webGL = new WebGLRender(gl);
         this.input = new InputHandler();
+        this.audio = new AudioManager();
         this.player = new Player(50, 50);
         this.player2 = new Player(canvas.width - 150, 50);
         this.debug = this.debugInfo();
@@ -107,13 +110,18 @@ export class Game {
                     if (this.player.onGround && this.player.y - this.player.step >= 0) {
                         this.player.velocityY = this.jumpForce;
                         this.player.onGround = false;
+                        this.audio.jump();
                     }
                     break;
                 case "a":
                     if(this.player.isAttacking) return;
                     this.player.attack(this.player2);
+                    this.audio.attack();
                     break;
                 case "x":
+                    if (!this.player.isParrying) {
+                        this.audio.parry();
+                    }
                     this.player.parry();
                     break;
             }
