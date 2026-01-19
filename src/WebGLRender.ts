@@ -61,12 +61,15 @@ export class WebGLRender {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
 
-    drawPlayer(rect: Rectangle, isAttacking: boolean): void {
+    drawPlayer(rect: Rectangle, isAttacking: boolean, isParrying: boolean): void {
         this.drawHead(rect);
         this.drawTorso(rect);
         if (isAttacking) {
             this.drawKickingLegs(rect);
         } else {
+            if(isParrying) {
+                this.drawParryingArms(rect)
+            }
             this.drawLegs(rect);
         }
     }
@@ -103,6 +106,22 @@ export class WebGLRender {
             y: y + height * 0.25 + height * 0.4,
             width: width * 0.2,
             height: height * 0.35
+        });
+    }
+
+    drawParryingArms({ x, y, width, height }: Rectangle): void {
+        this.drawRectangle({
+            x: x + width * 0.2 + width * 0.02,
+            y: y + height * 0.4,
+            width: width * 1.2,
+            height: height * 0.1
+        });
+
+        this.drawRectangle({
+            x: x + width * 0.2 + width * 1.2,
+            y: y + height * 0.2,
+            width: width * 0.2,
+            height: height * 0.3
         });
     }
 

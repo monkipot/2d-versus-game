@@ -131,7 +131,7 @@ export class Game {
 
     render(): void {
         this.webGL.clear();
-        this.webGL.drawPlayer(this.player.getRectangle(), this.player.isAttacking);
-        this.webGL.drawPlayer(this.player2.getRectangle(), this.player2.isAttacking);
+        this.webGL.drawPlayer(this.player.getRectangle(), this.player.isAttacking, this.player.isParrying);
+        this.webGL.drawPlayer(this.player2.getRectangle(), this.player2.isAttacking, this.player2.isParrying);
     }
 }
