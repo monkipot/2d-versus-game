@@ -43,7 +43,8 @@ export class Player {
     }
 
     isInRange(opponent: Player): boolean {
-        return Math.abs((this.x + this.width) - opponent.x) <= this.attackRange;
+        const gap = Math.max(this.x, opponent.x) - Math.min(this.x + this.width, opponent.x + opponent.width);
+        return gap <= this.attackRange;
     }
 
     attack(opponent: Player): void {
