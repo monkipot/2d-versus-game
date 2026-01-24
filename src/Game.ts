@@ -2,6 +2,7 @@ import { WebGLRender } from "./WebGLRender.js";
 import { InputHandler } from "./InputHandler.js";
 import { Player } from "./Player.js";
 import { AudioManager } from "./AudioManager.js";
+import { BotController } from "./BotController.js";
 
 export class Game {
     private canvas: HTMLCanvasElement;
@@ -13,6 +14,7 @@ export class Game {
     private gravity: number = 0.5;
     private jumpForce: number = -12;
     private debug: HTMLPreElement;
+    private botController: BotController;
 
     constructor(canvasId: string) {
         const canvas = document.querySelector<HTMLCanvasElement>(canvasId);
@@ -31,6 +33,7 @@ export class Game {
         this.audio = new AudioManager();
         this.player = new Player(50, 50);
         this.player2 = new Player(canvas.width - 150, 50);
+        this.botController = new BotController(this.player2, this.player);
         this.debug = this.debugInfo();
 
         this.keyboard();
@@ -67,6 +70,7 @@ export class Game {
 
     private loop(): void {
         this.setGravity();
+        this.botController.update();
         this.render();
         this.debugUpdate();
         requestAnimationFrame(() => this.loop());
