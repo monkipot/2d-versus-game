@@ -22,7 +22,7 @@ export class Player {
         this.height = height;
         this.step = 10;
         this.velocityY = 0;
-        this.onGround = true;
+        this.onGround = false;
     }
 
     moveLeft(): void {
