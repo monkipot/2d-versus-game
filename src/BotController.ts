@@ -1,4 +1,5 @@
 import { Player } from "./Player.js";
+import { GameConfig } from "./config/GameConfig.js";
 
 export class BotController {
     private bot: Player;
@@ -17,7 +18,7 @@ export class BotController {
         if (inAttackRange && this.canAttack) {
             this.bot.attack(this.target);
             this.canAttack = false;
-            setTimeout(() => this.canAttack = true, 1000);
+            setTimeout(() => this.canAttack = true, GameConfig.bot.attackCooldown);
             return;
         }
 

@@ -3,6 +3,7 @@ import { InputHandler } from "./InputHandler.js";
 import { Player } from "./Player.js";
 import { AudioManager } from "./AudioManager.js";
 import { BotController } from "./BotController.js";
+import { GameConfig } from "./config/GameConfig.js";
 
 export class Game {
     private canvas: HTMLCanvasElement;
@@ -11,8 +12,8 @@ export class Game {
     private audio: AudioManager;
     private player: Player;
     private player2: Player;
-    private gravity: number = 0.5;
-    private jumpForce: number = -12;
+    private gravity: number = GameConfig.physics.gravity;
+    private jumpForce: number = GameConfig.physics.jumpForce;
     private debug: HTMLPreElement;
     private botController: BotController;
 

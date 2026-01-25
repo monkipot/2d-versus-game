@@ -1,3 +1,5 @@
+import { GameConfig } from "./config/GameConfig.js";
+
 /**
  * https://developer.mozilla.org/fr/docs/Web/API/Web_Audio_API/Using_Web_Audio_API
  */
@@ -26,14 +28,17 @@ export class AudioManager {
     }
 
     attack(): void {
-        this.playTone(100, 0.1, "sawtooth");
+        const { frequency, duration, type } = GameConfig.audio.attack;
+        this.playTone(frequency, duration, type);
     }
 
     jump(): void {
-        this.playTone(500, 0.1, "triangle");
+        const { frequency, duration, type } = GameConfig.audio.jump;
+        this.playTone(frequency, duration, type);
     }
 
     parry(): void {
-        this.playTone(1000, 0.05, "square");
+        const { frequency, duration, type } = GameConfig.audio.parry;
+        this.playTone(frequency, duration, type);
     }
 }

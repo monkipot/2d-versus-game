@@ -1,4 +1,5 @@
 import type { Rectangle } from "./WebGLRender.js";
+import { GameConfig } from "./config/GameConfig.js";
 
 export class Player {
     x: number;
@@ -9,18 +10,23 @@ export class Player {
     //TODO: should be a statePlayer
     velocityY: number;
     onGround: boolean;
-    health: number = 100;
-    strength: number = 10;
-    attackRange: number = 20;
+    health: number = GameConfig.player.initialHealth;
+    strength: number = GameConfig.player.strength;
+    attackRange: number = GameConfig.player.attackRange;
     isAttacking: boolean = false;
     isParrying: boolean = false;
 
-    constructor(x: number, y: number, width: number = 60, height: number = 150) {
+    constructor(
+        x: number,
+        y: number,
+        width: number = GameConfig.player.width,
+        height: number = GameConfig.player.height
+    ) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.step = 10;
+        this.step = GameConfig.player.step;
         this.velocityY = 0;
         this.onGround = false;
     }
@@ -55,7 +61,7 @@ export class Player {
         }
         setTimeout(() => {
             this.isAttacking = false;
-        }, 300);
+        }, GameConfig.player.attackDuration);
     }
 
     parry(): void {
