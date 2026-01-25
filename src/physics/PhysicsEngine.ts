@@ -3,6 +3,7 @@ import type { Bounds, PhysicsEntity } from "./physics.js";
 
 export class PhysicsEngine {
     private gravity: number = GameConfig.physics.gravity;
+    private groundOffset: number = GameConfig.physics.groundOffset;
 
     update(entities: PhysicsEntity[], bounds: Bounds): void {
         for (const entity of entities) {
@@ -13,8 +14,9 @@ export class PhysicsEngine {
     }
 
     private groundCollision(entity: PhysicsEntity, bounds: Bounds): void {
-        if (entity.y + entity.height >= bounds.height) {
-            entity.y = bounds.height - entity.height;
+        const groundLevel = bounds.height - this.groundOffset;
+        if (entity.y + entity.height >= groundLevel) {
+            entity.y = groundLevel - entity.height;
             entity.velocityY = 0;
             entity.onGround = true;
         }

@@ -3,6 +3,7 @@ export const GameConfig = {
     physics: {
         gravity: 0.5,
         jumpForce: -12,
+        groundOffset: 125,
     },
     player: {
         width: 60,
