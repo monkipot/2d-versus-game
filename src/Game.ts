@@ -17,6 +17,7 @@ export class Game {
     private jumpForce: number = GameConfig.physics.jumpForce;
     private debugOverlay: DebugOverlay;
     private botController: BotController;
+    private lastTime: number = 0;
 
     constructor(canvasId: string) {
         const canvas = document.querySelector<HTMLCanvasElement>(canvasId);
@@ -40,15 +41,20 @@ export class Game {
         this.debugOverlay = new DebugOverlay(canvas);
 
         this.keyboard();
-        this.loop();
+        requestAnimationFrame((t) => this.loop(t));
     }
 
-    private loop(): void {
+    private loop(t: number): void {
+        const dt = t - this.lastTime;
+        this.lastTime = t;
+
+        this.player.update(dt);
+        this.player2.update(dt);
         this.setGravity();
         this.botController.update();
         this.render();
         this.debugOverlay.update([this.player, this.player2]);
-        requestAnimationFrame(() => this.loop());
+        requestAnimationFrame((t) => this.loop(t));
     }
 
     private setGravity(): void {
@@ -93,12 +99,12 @@ export class Game {
                     }
                     break;
                 case "a":
-                    if(this.player.isAttacking) return;
+                    if (this.player.isAttacking()) return;
                     this.player.attack(this.player2);
                     this.audio.attack();
                     break;
                 case "x":
-                    if (!this.player.isParrying) {
+                    if (!this.player.isParrying()) {
                         this.audio.parry();
                     }
                     this.player.parry();
@@ -119,7 +125,7 @@ export class Game {
     render(): void {
         this.webGL.clear();
         this.webGL.drawBackground();
-        this.webGL.drawPlayer(this.player.getRectangle(), this.player.isAttacking, this.player.isParrying);
-        this.webGL.drawPlayer(this.player2.getRectangle(), this.player2.isAttacking, this.player2.isParrying);
+        this.webGL.drawPlayer(this.player.getRectangle(), this.player.isAttacking(), this.player.isParrying());
+        this.webGL.drawPlayer(this.player2.getRectangle(), this.player2.isAttacking(), this.player2.isParrying());
     }
 }

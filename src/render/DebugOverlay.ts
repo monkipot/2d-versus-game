@@ -24,8 +24,8 @@ export class DebugOverlay {
                   onGround: ${player.onGround}
                   health: ${player.health}
                   strength: ${player.strength}
-                  isAttacking: ${player.isAttacking}
-                  isParrying: ${player.isParrying}
+                  isAttacking: ${player.isAttacking()}
+                  isParrying: ${player.isParrying()}
             `)
             .join();
     }

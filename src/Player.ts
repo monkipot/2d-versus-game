@@ -1,5 +1,7 @@
 import type { Rectangle } from "./WebGLRender.js";
 import { GameConfig } from "./config/GameConfig.js";
+import { StateMachine } from "./fighter/StateMachine.js";
+import { FighterState } from "./fighter/state.js";
 
 export class Player {
     x: number;
@@ -7,14 +9,12 @@ export class Player {
     width: number;
     height: number;
     step: number;
-    //TODO: should be a statePlayer
     velocityY: number;
     onGround: boolean;
     health: number = GameConfig.player.initialHealth;
     strength: number = GameConfig.player.strength;
     attackRange: number = GameConfig.player.attackRange;
-    isAttacking: boolean = false;
-    isParrying: boolean = false;
+    private stateMachine: StateMachine = new StateMachine();
 
     constructor(
         x: number,
@@ -29,6 +29,18 @@ export class Player {
         this.step = GameConfig.player.step;
         this.velocityY = 0;
         this.onGround = false;
+    }
+
+    isAttacking(): boolean {
+        return this.stateMachine.isAttacking();
+    }
+
+    isParrying(): boolean {
+        return this.stateMachine.isParrying();
+    }
+
+    update(deltaTime: number): void {
+        this.stateMachine.update(deltaTime);
     }
 
     moveLeft(): void {
@@ -54,21 +66,21 @@ export class Player {
     }
 
     attack(opponent: Player): void {
-        this.isAttacking = true;
+        if (!this.stateMachine.transitionTo(FighterState.Attacking)) return;
+
         if (this.isInRange(opponent)) {
-            const damages = opponent.isParrying ? this.strength * 0.2 : this.strength
+            const damages = opponent.isParrying() ? this.strength * 0.2 : this.strength;
             opponent.health -= damages;
         }
-        setTimeout(() => {
-            this.isAttacking = false;
-        }, GameConfig.player.attackDuration);
     }
 
     parry(): void {
-        this.isParrying = true;
+        this.stateMachine.transitionTo(FighterState.Parrying);
     }
 
     stopParry(): void {
-        this.isParrying = false;
+        if (this.isParrying()) {
+            this.stateMachine.transitionTo(FighterState.Idle);
+        }
     }
 }
