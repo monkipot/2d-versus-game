@@ -4,6 +4,7 @@ import { Player } from "./Player.js";
 import { AudioManager } from "./AudioManager.js";
 import { BotController } from "./BotController.js";
 import { GameConfig } from "./config/GameConfig.js";
+import { DebugOverlay } from "./render/DebugOverlay.js";
 
 export class Game {
     private canvas: HTMLCanvasElement;
@@ -14,7 +15,7 @@ export class Game {
     private player2: Player;
     private gravity: number = GameConfig.physics.gravity;
     private jumpForce: number = GameConfig.physics.jumpForce;
-    private debug: HTMLPreElement;
+    private debugOverlay: DebugOverlay;
     private botController: BotController;
 
     constructor(canvasId: string) {
@@ -36,45 +37,17 @@ export class Game {
         this.player = new Player(50, 50);
         this.player2 = new Player(canvas.width - 150, 50);
         this.botController = new BotController(this.player2, this.player);
-        this.debug = this.debugInfo();
+        this.debugOverlay = new DebugOverlay(canvas);
 
         this.keyboard();
         this.loop();
-    }
-
-    private debugInfo(): HTMLPreElement {
-        const debug = document.createElement("pre");
-        debug.style.position = "absolute";
-        debug.style.left = `${this.canvas.offsetLeft + this.canvas.width + 10}px`;
-        debug.style.top = `${this.canvas.offsetTop}px`;
-        debug.style.color = "black";
-        document.body.appendChild(debug);
-        return debug;
-    }
-
-    private debugUpdate(): void {
-        this.debug.textContent = [this.player, this.player2]
-            .map((player, i) => `
-                Player ${i + 1}:
-                  x: ${player.x.toFixed(1)}
-                  y: ${player.y.toFixed(1)}
-                  width: ${player.width}
-                  height: ${player.height}
-                  velocityY: ${player.velocityY.toFixed(2)}
-                  onGround: ${player.onGround}
-                  health: ${player.health}
-                  strength: ${player.strength}
-                  isAttacking: ${player.isAttacking}
-                  isParrying: ${player.isParrying}
-            `)
-            .join();
     }
 
     private loop(): void {
         this.setGravity();
         this.botController.update();
         this.render();
-        this.debugUpdate();
+        this.debugOverlay.update([this.player, this.player2]);
         requestAnimationFrame(() => this.loop());
     }
 
