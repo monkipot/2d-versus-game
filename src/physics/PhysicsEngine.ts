@@ -2,8 +2,8 @@ import { GameConfig } from "../config/GameConfig.js";
 import type { Bounds, PhysicsEntity } from "./physics.js";
 
 export class PhysicsEngine {
-    private gravity: number = GameConfig.physics.gravity;
-    private groundOffset: number = GameConfig.physics.groundOffset;
+    private readonly gravity: number = GameConfig.physics.gravity;
+    private readonly groundOffset: number = GameConfig.physics.groundOffset;
 
     update(entities: PhysicsEntity[], bounds: Bounds): void {
         for (const entity of entities) {
