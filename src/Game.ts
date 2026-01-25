@@ -29,6 +29,7 @@ export class Game {
 
         this.canvas = canvas;
         this.webGL = new WebGLRender(gl);
+        this.webGL.loadBackground();
         this.input = new InputHandler();
         this.audio = new AudioManager();
         this.player = new Player(50, 50);
@@ -143,6 +144,7 @@ export class Game {
 
     render(): void {
         this.webGL.clear();
+        this.webGL.drawBackground();
         this.webGL.drawPlayer(this.player.getRectangle(), this.player.isAttacking, this.player.isParrying);
         this.webGL.drawPlayer(this.player2.getRectangle(), this.player2.isAttacking, this.player2.isParrying);
     }

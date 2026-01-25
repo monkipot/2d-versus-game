@@ -8,16 +8,114 @@ export interface Rectangle {
 export class WebGLRender {
     private gl: WebGLRenderingContext;
     private readonly program: WebGLProgram;
+    private readonly backgroundProgram: WebGLProgram;
     private readonly positionBuffer: WebGLBuffer;
     private readonly positionLocation: number;
     private readonly resolutionLocation: WebGLUniformLocation;
+    private backgroundTexture: WebGLTexture | null = null;
+    private backgroundLoaded: boolean = false;
 
     constructor(gl: WebGLRenderingContext) {
         this.gl = gl;
         this.program = this.createProgram();
+        this.backgroundProgram = this.createBackgroundProgram();
         this.positionBuffer = gl.createBuffer()!;
         this.positionLocation = gl.getAttribLocation(this.program, "vertex_position");
         this.resolutionLocation = gl.getUniformLocation(this.program, "canva_size")!;
+    }
+
+    loadBackground(): void {
+        this.backgroundTexture = this.gl.createTexture();
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.backgroundTexture);
+
+        this.gl.texImage2D(
+            this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE,
+            new Uint8Array([0, 0, 0, 255])
+        );
+
+        const image = new Image();
+        image.onload = () => {
+            this.gl.bindTexture(this.gl.TEXTURE_2D, this.backgroundTexture);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+            this.backgroundLoaded = true;
+        };
+        image.src = "assets/arena.png";
+    }
+
+    private createBackgroundProgram(): WebGLProgram {
+        const vsSource = `
+            attribute vec2 a_position;
+            attribute vec2 a_texCoord;
+            varying vec2 v_texCoord;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+                v_texCoord = a_texCoord;
+            }
+        `;
+
+        const fsSource = `
+            precision mediump float;
+            uniform sampler2D u_texture;
+            varying vec2 v_texCoord;
+            void main() {
+                gl_FragColor = texture2D(u_texture, v_texCoord);
+            }
+        `;
+
+        const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vsSource);
+        const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fsSource);
+        const program = this.gl.createProgram();
+
+        this.gl.attachShader(program, vertexShader);
+        this.gl.attachShader(program, fragmentShader);
+        this.gl.linkProgram(program);
+
+        return program;
+    }
+
+    drawBackground(): void {
+        if (!this.backgroundLoaded || !this.backgroundTexture) return;
+
+        this.gl.useProgram(this.backgroundProgram);
+
+        const positionLocation = this.gl.getAttribLocation(this.backgroundProgram, "a_position");
+        const texCoordLocation = this.gl.getAttribLocation(this.backgroundProgram, "a_texCoord");
+
+        const positions = new Float32Array([
+            -1, -1, 1, -1, -1, 1,
+            -1, 1, 1, -1, 1, 1
+        ]);
+
+        const texCoords = new Float32Array([
+            0, 1, 1, 1, 0, 0,
+            0, 0, 1, 1, 1, 0
+        ]);
+
+        const posBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+        this.gl.enableVertexAttribArray(positionLocation);
+        this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+        const texBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, texBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, texCoords, this.gl.STATIC_DRAW);
+        this.gl.enableVertexAttribArray(texCoordLocation);
+        this.gl.vertexAttribPointer(texCoordLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.backgroundTexture);
+
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+
+        this.gl.disableVertexAttribArray(positionLocation);
+        this.gl.disableVertexAttribArray(texCoordLocation);
+        this.gl.deleteBuffer(posBuffer);
+        this.gl.deleteBuffer(texBuffer);
     }
 
     private createProgram(): WebGLProgram {
