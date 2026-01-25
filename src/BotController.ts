@@ -12,7 +12,7 @@ export class BotController {
     }
 
     update(): void {
-        const distanceToTarget = this.bot.x - (this.target.x + this.target.width);
+        const distanceToTarget = this.bot.position.x - (this.target.position.x + this.target.dimension.width);
         const inAttackRange = this.bot.isInRange(this.target);
 
         if (inAttackRange && this.canAttack) {
@@ -22,10 +22,10 @@ export class BotController {
             return;
         }
 
-        if (distanceToTarget > this.bot.attackRange) {
-            if(!this.bot.onGround) return;
-            const nextX = this.bot.x - this.bot.step;
-            if (nextX > this.target.x + this.target.width) {
+        if (distanceToTarget > this.bot.combat.attackRange) {
+            if(!this.bot.physics.onGround) return;
+            const nextX = this.bot.position.x - this.bot.movement.step;
+            if (nextX > this.target.position.x + this.target.dimension.width) {
                 this.bot.moveLeft();
             }
         }

@@ -2,21 +2,26 @@ import type { Rectangle } from "./WebGLRender.js";
 import { GameConfig } from "./config/GameConfig.js";
 import { StateMachine } from "./fighter/StateMachine.js";
 import { FighterState } from "./fighter/state.js";
-import { FightEngine } from "./fighter/FightEngine.js";
+import { CombatSystem } from "./fighter/CombatSystem.js";
+import type { Fighter } from "./fighter/fighter.js";
+import type {
+    PositionComponent,
+    DimensionComponent,
+    PhysicsComponent,
+    MovementComponent,
+    CombatComponent,
+    StateComponent,
+} from "./ecs/components.js";
 
-export class Player {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    step: number;
-    velocityY: number;
-    onGround: boolean;
-    health: number = GameConfig.player.initialHealth;
-    strength: number = GameConfig.player.strength;
-    attackRange: number = GameConfig.player.attackRange;
-    private stateMachine: StateMachine = new StateMachine();
-    private static fightEngine: FightEngine = new FightEngine();
+export class Player implements Fighter {
+    position: PositionComponent;
+    dimension: DimensionComponent;
+    physics: PhysicsComponent;
+    movement: MovementComponent;
+    combat: CombatComponent;
+    state: StateComponent;
+
+    private static combatSystem: CombatSystem = new CombatSystem();
 
     constructor(
         x: number,
@@ -24,64 +29,67 @@ export class Player {
         width: number = GameConfig.player.width,
         height: number = GameConfig.player.height
     ) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.step = GameConfig.player.step;
-        this.velocityY = 0;
-        this.onGround = false;
+        this.position = { x, y };
+        this.dimension = { width, height };
+        this.physics = { velocityY: 0, onGround: false };
+        this.movement = { step: GameConfig.player.step };
+        this.combat = {
+            health: GameConfig.player.initialHealth,
+            strength: GameConfig.player.strength,
+            attackRange: GameConfig.player.attackRange,
+        };
+        this.state = { stateMachine: new StateMachine() };
     }
 
     isAttacking(): boolean {
-        return this.stateMachine.isAttacking();
+        return this.state.stateMachine.isAttacking();
     }
 
     isParrying(): boolean {
-        return this.stateMachine.isParrying();
+        return this.state.stateMachine.isParrying();
     }
 
     isJumping(): boolean {
-        return this.stateMachine.isJumping();
+        return this.state.stateMachine.isJumping();
     }
 
     update(deltaTime: number): void {
-        this.stateMachine.update(deltaTime);
+        this.state.stateMachine.update(deltaTime);
     }
 
     moveLeft(): void {
-        this.x -= this.step;
+        this.position.x -= this.movement.step;
     }
 
     moveRight(): void {
-        this.x += this.step;
+        this.position.x += this.movement.step;
     }
 
     getRectangle(): Rectangle {
         return {
-            x: this.x,
-            y: this.y,
-            width: this.width,
-            height: this.height
+            x: this.position.x,
+            y: this.position.y,
+            width: this.dimension.width,
+            height: this.dimension.height
         };
     }
 
     isInRange(opponent: Player): boolean {
-        return Player.fightEngine.isInRange(this, opponent);
+        return Player.combatSystem.isInRange(this, opponent);
     }
 
     attack(opponent: Player): void {
-        if (!this.stateMachine.transitionTo(FighterState.Attacking)) return;
-        Player.fightEngine.attack(this, opponent);
+        if (!this.state.stateMachine.transitionTo(FighterState.Attacking)) return;
+        Player.combatSystem.attack(this, opponent);
     }
 
     parry(): void {
-        this.stateMachine.transitionTo(FighterState.Parrying);
+        this.state.stateMachine.transitionTo(FighterState.Parrying);
     }
 
     stopParry(): void {
         if (this.isParrying()) {
-            this.stateMachine.transitionTo(FighterState.Idle);
+            this.state.stateMachine.transitionTo(FighterState.Idle);
         }
     }
 }

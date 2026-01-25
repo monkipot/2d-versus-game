@@ -16,14 +16,14 @@ export class DebugOverlay {
         this.element.textContent = players
             .map((player, i) => `
                 Player ${i + 1}:
-                  x: ${player.x.toFixed(1)}
-                  y: ${player.y.toFixed(1)}
-                  width: ${player.width}
-                  height: ${player.height}
-                  velocityY: ${player.velocityY.toFixed(2)}
-                  onGround: ${player.onGround}
-                  health: ${player.health}
-                  strength: ${player.strength}
+                  x: ${player.position.x.toFixed(1)}
+                  y: ${player.position.y.toFixed(1)}
+                  width: ${player.dimension.width}
+                  height: ${player.dimension.height}
+                  velocityY: ${player.physics.velocityY.toFixed(2)}
+                  onGround: ${player.physics.onGround}
+                  health: ${player.combat.health}
+                  strength: ${player.combat.strength}
                   isAttacking: ${player.isAttacking()}
                   isParrying: ${player.isParrying()}
             `)

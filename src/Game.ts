@@ -5,7 +5,7 @@ import { AudioManager } from "./AudioManager.js";
 import { BotController } from "./BotController.js";
 import { GameConfig } from "./config/GameConfig.js";
 import { DebugOverlay } from "./render/DebugOverlay.js";
-import { PhysicsEngine } from "./physics/PhysicsEngine.js";
+import { PhysicsSystem } from "./physics/PhysicsSystem.js";
 
 export class Game {
     private canvas: HTMLCanvasElement;
@@ -17,7 +17,7 @@ export class Game {
     private jumpForce: number = GameConfig.physics.jumpForce;
     private debugOverlay: DebugOverlay;
     private botController: BotController;
-    private physicsEngine: PhysicsEngine = new PhysicsEngine();
+    private physicsSystem: PhysicsSystem = new PhysicsSystem();
     private lastTime: number = 0;
 
     constructor(canvasId: string) {
@@ -51,7 +51,7 @@ export class Game {
 
         this.player.update(dt);
         this.player2.update(dt);
-        this.physicsEngine.update([this.player, this.player2], this.canvas);
+        this.physicsSystem.update([this.player, this.player2], this.canvas);
         this.botController.update();
         this.render();
         this.debugOverlay.update([this.player, this.player2]);
@@ -59,30 +59,31 @@ export class Game {
     }
 
     private willCollide(nextX: number): boolean {
-        return nextX < this.player2.x + this.player2.width && nextX + this.player.width > this.player2.x;
+        return nextX < this.player2.position.x + this.player2.dimension.width
+            && nextX + this.player.dimension.width > this.player2.position.x;
     }
 
     private keyboard(): void {
         this.input.setOnKeyDown((key) => {
             switch (key) {
                 case "ArrowLeft": {
-                    const nextX = this.player.x - this.player.step;
+                    const nextX = this.player.position.x - this.player.movement.step;
                     if (nextX >= 0 && !this.willCollide(nextX)) {
                         this.player.moveLeft();
                     }
                     break;
                 }
                 case "ArrowRight": {
-                    const nextX = this.player.x + this.player.step;
-                    if (nextX + this.player.width <= this.canvas.width && !this.willCollide(nextX)) {
+                    const nextX = this.player.position.x + this.player.movement.step;
+                    if (nextX + this.player.dimension.width <= this.canvas.width && !this.willCollide(nextX)) {
                         this.player.moveRight();
                     }
                     break;
                 }
                 case "ArrowUp":
-                    if (this.player.onGround && this.player.y - this.player.step >= 0) {
-                        this.player.velocityY = this.jumpForce;
-                        this.player.onGround = false;
+                    if (this.player.physics.onGround && this.player.position.y - this.player.movement.step >= 0) {
+                        this.player.physics.velocityY = this.jumpForce;
+                        this.player.physics.onGround = false;
                         this.audio.jump();
                     }
                     break;
