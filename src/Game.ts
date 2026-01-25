@@ -5,6 +5,7 @@ import { AudioManager } from "./AudioManager.js";
 import { BotController } from "./BotController.js";
 import { GameConfig } from "./config/GameConfig.js";
 import { DebugOverlay } from "./render/DebugOverlay.js";
+import { PhysicsEngine } from "./physics/PhysicsEngine.js";
 
 export class Game {
     private canvas: HTMLCanvasElement;
@@ -13,10 +14,10 @@ export class Game {
     private audio: AudioManager;
     private player: Player;
     private player2: Player;
-    private gravity: number = GameConfig.physics.gravity;
     private jumpForce: number = GameConfig.physics.jumpForce;
     private debugOverlay: DebugOverlay;
     private botController: BotController;
+    private physicsEngine: PhysicsEngine = new PhysicsEngine();
     private lastTime: number = 0;
 
     constructor(canvasId: string) {
@@ -50,24 +51,11 @@ export class Game {
 
         this.player.update(dt);
         this.player2.update(dt);
-        this.setGravity();
+        this.physicsEngine.update([this.player, this.player2], this.canvas);
         this.botController.update();
         this.render();
         this.debugOverlay.update([this.player, this.player2]);
         requestAnimationFrame((t) => this.loop(t));
-    }
-
-    private setGravity(): void {
-        [this.player, this.player2].map(player => {
-            player.velocityY += this.gravity;
-            player.y += player.velocityY;
-
-            if (player.y + player.height >= this.canvas.height) {
-                player.y = this.canvas.height - player.height;
-                player.velocityY = 0;
-                player.onGround = true;
-            }
-        });
     }
 
     private willCollide(nextX: number): boolean {
