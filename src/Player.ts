@@ -2,6 +2,7 @@ import type { Rectangle } from "./WebGLRender.js";
 import { GameConfig } from "./config/GameConfig.js";
 import { StateMachine } from "./fighter/StateMachine.js";
 import { FighterState } from "./fighter/state.js";
+import { FightEngine } from "./fighter/FightEngine.js";
 
 export class Player {
     x: number;
@@ -15,6 +16,7 @@ export class Player {
     strength: number = GameConfig.player.strength;
     attackRange: number = GameConfig.player.attackRange;
     private stateMachine: StateMachine = new StateMachine();
+    private static fightEngine: FightEngine = new FightEngine();
 
     constructor(
         x: number,
@@ -39,6 +41,10 @@ export class Player {
         return this.stateMachine.isParrying();
     }
 
+    isJumping(): boolean {
+        return this.stateMachine.isJumping();
+    }
+
     update(deltaTime: number): void {
         this.stateMachine.update(deltaTime);
     }
@@ -61,17 +67,12 @@ export class Player {
     }
 
     isInRange(opponent: Player): boolean {
-        const gap = Math.max(this.x, opponent.x) - Math.min(this.x + this.width, opponent.x + opponent.width);
-        return gap <= this.attackRange;
+        return Player.fightEngine.isInRange(this, opponent);
     }
 
     attack(opponent: Player): void {
         if (!this.stateMachine.transitionTo(FighterState.Attacking)) return;
-
-        if (this.isInRange(opponent)) {
-            const damages = opponent.isParrying() ? this.strength * 0.2 : this.strength;
-            opponent.health -= damages;
-        }
+        Player.fightEngine.attack(this, opponent);
     }
 
     parry(): void {
